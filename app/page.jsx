@@ -4,6 +4,7 @@ import "./home.css"
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import SearchDsiplay from "../components/SearchDisplay"
+import Swal from 'sweetalert2'
 // import axios from "axios";
 
 
@@ -12,12 +13,28 @@ export default function Home() {
 
 
     const [results, setResults] = useState([]);
+    const [loc, setLoc] = useState(null);
+    const [res, setRes] = useState(null)
     // const [serRes, setRes] = useState("");
-
+    function locfun(e) {
+        setLoc(e.target.value)
+        sessionStorage.setItem("cid", e.target.value);
+        setResults([])
+    }
     async function serRes1(e) {
         // setRes(e.target.value);
-        if(e.target.value == null){
-            setResults({})
+        if (e.target.value == null) {
+            setResults([])
+        }
+        if (!loc || loc == "-10") {
+            Swal.fire({
+                icon: "error",
+                title: "Location Error",
+                text: "Please Enter the Location!",
+                // footer: '<a href="#">Why do I have this issue?</a>'
+            });
+            setResults([])
+            return
         }
         try {
             const response = await fetch('/api/search', {
@@ -26,7 +43,8 @@ export default function Home() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    ResName: e.target.value
+                    ResName: e.target.value,
+                    Locid: loc
                 })
             });
             if (response.ok) {
@@ -35,7 +53,7 @@ export default function Home() {
                 //     console.log(data.restaurants[i].restaurant.name);
                 // }
                 let temp = []
-                for(let i = 0; i < 10; i++){
+                for (let i = 0; i < 10; i++) {
                     temp.push(data.restaurants[i]);
                 }
                 setResults(temp);
@@ -67,13 +85,30 @@ export default function Home() {
                     <h3>Discover the best food & drinks</h3>
                     <div className="search">
                         <i className="fa-solid fa-location-dot"></i>
-                        <p>xyz</p>
+                        <p><select onChange={locfun} value={loc}>
+                            <option value="-10">Select a location</option>
+                            <option value="1">India</option>
+                            <option value="14">Australia</option>
+                            <option value="30">Brazil</option>
+                            <option value="37">Canada</option>
+                            <option value="94">Indonesia</option>
+                            <option value="148">New Zeland</option>
+                            <option value="162">Phillipines</option>
+                            <option value="166">Qatar</option>
+                            <option value="184">Singapore</option>
+                            <option value="189">South Africa</option>
+                            <option value="191">Sri Lanka</option>
+                            <option value="208">Turkey</option>
+                            <option value="214">UAE</option>
+                            <option value="215">UK</option>
+                            <option value="216">US</option>
+                        </select></p>
                         <i className="fa-solid fa-magnifying-glass"></i>
                         <input type="text" placeholder="Search for Restaurant, cuisine or a dish" onChange={serRes1} />
                     </div>
                     <div>
                         {results.map((res, index) => (
-                            <SearchDsiplay name={res.restaurant.name} id={res.restaurant.R.res_id} rating={res.restaurant.user_rating.aggregate_rating}/>
+                            <SearchDsiplay name={res.restaurant.name} id={res.restaurant.R.res_id} rating={res.restaurant.user_rating.aggregate_rating} />
                             // <div>
                             // <Link key={index} href={res.restaurant.url}>
                             //     {res.restaurant.name}

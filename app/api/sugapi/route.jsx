@@ -9,7 +9,7 @@ export async function POST(request) {
     try {
         // Parse the request body to get the ResName
         const dat = [...data, ...data1, ...data2, ...data3, ...data4];
-        var { ResName, Locid } = await request.json();
+        var { Locid } = await request.json();
         console.log("ResName received:", Locid);
         Locid = parseInt(Locid);
 
@@ -20,7 +20,6 @@ export async function POST(request) {
             if (Array.isArray(item.restaurants)) {
                 // Filter to get all restaurants with the matching name
                 const foundRestaurants = item.restaurants.filter(restaurant =>
-                    restaurant.restaurant.name.toLowerCase().includes(ResName.toLowerCase()) &&
                     restaurant.restaurant.location.country_id === Locid
                 );
                 // Add found restaurants to the result array
